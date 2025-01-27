@@ -40,3 +40,15 @@
 .read-the-docs {
   color: #888;
 }
+
+/* ************************** */
+.todolist {
+  background-color: cadetblue;
+  padding: 50px;
+}
+.green {
+  background-color: yellowgreen;
+}
+.orange {
+  background-color: orange;
+}
