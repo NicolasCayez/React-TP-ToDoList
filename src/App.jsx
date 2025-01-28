@@ -5,15 +5,31 @@ import './App.css'
 
 //? Partie 3 et 4
 const TODOS = [
-  {todo:"Devoirs", date:"2025-01-12", checked:false},
-  {todo:"Lessive", date:"2025-01-14", checked:true},
-  {todo:"Mettre la table", date:"2025-01-18", checked:false},
-  {todo:"Cuisine", date:"2025-02-02", checked:false},
-  {todo:"Vaisselle", date:"2025-02-11", checked:false}
+  {todo:"Devoirs", date:"2025-01-12", checked:false, heure:2, categorie:"ecole"},
+  {todo:"Lessive", date:"2025-01-14", checked:true, heure:3, categorie:"menage"},
+  {todo:"Mettre la table", date:"2025-01-18", checked:false, heure:1, categorie:"repas"},
+  {todo:"Cuisine", date:"2025-02-02", checked:false, heure:2, categorie:"repas"},
+  {todo:"Vaisselle", date:"2025-02-11", checked:false, heure:1, categorie:"repas"}
 ]
 
 export default function App() {
   const DATE = new Date();
+
+  const [ecole, setEcole] = useState(true);
+  const [menage, setMenage] = useState(true);
+  const [repas, setRepas] = useState(true);
+
+  const TODOLIST = TODOS.filter(element => {
+    if (element.categorie == "ecole" && !ecole == true) {
+      return false
+    } else if (element.categorie == "menage" && !menage == true) {
+      return false
+    } else if (element.categorie == "repas" && !repas == true) {
+      return false
+    } else {
+      return true
+    }
+  })
 
   return (
     <>
@@ -38,17 +54,33 @@ export default function App() {
           )}
         </ul> */}
 
+        //?TP 2 - Partie 2
+        <section>
+          <input type="checkbox" name="ecole" id="" checked={ecole} onChange={()=>setEcole(!ecole)} /><label>Ecole</label>
+          <input type="checkbox" name="menage" id="" checked={menage} onChange={()=>setMenage(!menage)} /><label>Ménage</label>
+          <input type="checkbox" name="repas" id="" checked={repas} onChange={()=>setRepas(!repas)} /><label>Repas</label>
+        </section>
+
         {/* Partie 4 */}
         <ul>
-          {TODOS.map((uneTache, index) =>
+          {/* {TODOS.map((uneTache, index) => */}
+          {TODOLIST.map((uneTache, index) =>
             // <ToDo key={index} todo={uneTache.todo} date={uneTache.date} checked={uneTache.checked} />
             // <ToDoTernaire key={index} todo={uneTache.todo} date={uneTache.date} checked={uneTache.checked} />
-            <ToDoAnd key={index} todo={uneTache.todo} date={uneTache.date} checked={uneTache.checked} />
+            <ToDoAnd key={index} todo={uneTache.todo} date={uneTache.date} checked={uneTache.checked} heureRestante={uneTache.heure} />
           )}
         </ul>
+
+        //?TP 2 - Partie 1
+        <Form onSubmit={(event)=>handleSubmit(event)}/>
       </article>
     </>
   )
+  function handleSubmit(event) {
+    event.preventDefault()
+    const INPUTS = document.querySelectorAll('input[type="text"]')
+    INPUTS.forEach((unInput) => {console.log(unInput.value)})
+  }
 }
 
 //? Partie 1
@@ -76,35 +108,86 @@ export default function App() {
 // }
 
 //? Partie 4
-function ToDo({todo, date, checked}){
-  if (checked) {
-    return (
-      <>
-        <li className="green"><input type="checkbox" defaultChecked /><label>{todo} - {date}</label></li>
-      </>
-    )
-  }else{
-    return (
-      <>
-        <li className="orange"><input type="checkbox" /><label>{todo} - {date}</label></li>
-      </>
-    )
+// function ToDo({todo, date, checked}){
+//   if (checked) {
+//     return (
+//       <>
+//         <li className="green"><input type="checkbox" defaultChecked /><label>{todo} - {date}</label></li>
+//       </>
+//     )
+//   }else{
+//     return (
+//       <>
+//         <li className="orange"><input type="checkbox" /><label>{todo} - {date}</label></li>
+//       </>
+//     )
+//   }
+// }
+
+// function ToDoTernaire ({todo, date, checked}) {
+//   return (
+//     <>
+//       {checked ? <li className="green"><input type="checkbox" defaultChecked /><label>{todo} - {date}</label></li> : <li className="orange"><input type="checkbox" /><label>{todo} - {date}</label></li> }
+//     </>
+//   )
+// }
+
+// function ToDoAnd ({todo, date, checked}) {
+//   return (
+//     <>
+//       <li className={checked ? "green" : "orange"}>{checked && <input type="checkbox" defaultChecked />}<label>{todo} - {date}</label></li>
+//     </>
+//   )
+// }
+
+//?TP 2 - Partie 1 et 2
+function ToDoAnd({todo, date, checked, heureRestante}) {
+
+  const [heures, setHeures] = useState(heureRestante);
+
+  function handleClick(event, todo) {
+    // alert(todo)
   }
-}
 
-function ToDoTernaire ({todo, date, checked}) {
+  //! la valeur change mais pas l'affichage car le texte n'est pas un enfant. dans le cours page 55 on a un onClick commun -> méthode différente)
+  function handleClickMinus() {
+    if (heures > 0) {
+      setHeures(heures - 1)
+      console.log(heures)
+    }
+    
+  }
+
+  function handleClickPlus() {
+    setHeures(heures + 1)
+    console.log(heures)
+  }
+
   return (
     <>
-      {checked ? <li className="green"><input type="checkbox" defaultChecked /><label>{todo} - {date}</label></li> : <li className="orange"><input type="checkbox" /><label>{todo} - {date}</label></li> }
+      <li onClick={(event)=>handleClick(event, todo)} className={checked ? "green" : "orange"} >{checked && <input type="checkbox" defaultChecked />}
+        <label>{todo} - {date} </label>
+        <span>
+          <button onClick={handleClickMinus}>-</button>
+          <button onClick={handleClickPlus}>+</button>
+          Reste {heures} heures
+        </span>
+      </li>
     </>
   )
 }
 
-function ToDoAnd ({todo, date, checked}) {
+function Form({onSubmit}) {
+  function handleChange(event) {
+    console.log(event.target.value)
+  }
   return (
     <>
-      <li className={checked ? "green" : "orange"}>{checked && <input type="checkbox" defaultChecked />}<label>{todo} - {date}</label></li>
+    <form>
+      <input type="text" name="" id="" placeholder="La ToDo" onChange={(event)=>handleChange(event)}/>
+      <input type="text" name="" id="" placeholder="La Date" onChange={(event)=>handleChange(event)}/>
+      <input type="submit" onClick={(event)=>onSubmit(event)}/>
+    </form>
     </>
   )
 }
-
